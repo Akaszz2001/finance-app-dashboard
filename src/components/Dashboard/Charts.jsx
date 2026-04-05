@@ -4,28 +4,43 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  PieChart,
-  Pie,
+  CartesianGrid,
+  ResponsiveContainer,
 } from "recharts";
 import { useFinanceStore } from "../../store/useFinanceStore";
 
 const Charts = () => {
-  const { transactions } = useFinanceStore();
+  const transactions = useFinanceStore((state) => state.transactions);
+
+
+  const sortedData = [...transactions].sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
+  );
 
   return (
-    <div className="grid md:grid-cols-2 gap-6">
-      <LineChart width={400} height={300} data={transactions}>
-        <XAxis dataKey="date" />
-        <YAxis />
-        <Tooltip />
-        <Line dataKey="amount" />
-      </LineChart>
+    <div className="bg-white p-4 rounded-2xl shadow w-full h-[300px]">
+      <h2 className="text-lg font-semibold mb-4">
+        Transactions Over Time
+      </h2>
 
-      <PieChart width={400} height={300}>
-        <Pie data={transactions} dataKey="amount" nameKey="category" />
-      </PieChart>
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={sortedData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          
+          <XAxis dataKey="date" />
+          <YAxis />
+          <Tooltip />
+
+          <Line
+            type="monotone"
+            dataKey="amount"
+            stroke="#3b82f6"
+            strokeWidth={2}
+          />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 };
 
-export default Charts;  
+export default Charts;

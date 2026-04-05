@@ -1,17 +1,9 @@
 import { useFinanceStore } from "../../store/useFinanceStore";
 
+
 const SummaryCards = () => {
-  const { transactions } = useFinanceStore();
 
-  const income = transactions
-    .filter((t) => t.type === "income")
-    .reduce((acc, t) => acc + t.amount, 0);
-
-  const expense = transactions
-    .filter((t) => t.type === "expense")
-    .reduce((acc, t) => acc + t.amount, 0);
-
-  const balance = income - expense;
+  const {  income, expense, balance } = useFinanceStore()
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

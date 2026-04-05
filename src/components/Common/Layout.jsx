@@ -6,6 +6,7 @@ import DashboardPage from "../../pages/DashboardPage";
 import TransactionsPage from "../../pages/TransactionsPage";
 import AddTransactionForm from "../../pages/AddTransactionForm";
 import { useFinanceStore } from "../../store/useFinanceStore";
+import InsightsPage from "../Insights/InsightsPage";
 // import Insights from "../Insights/Insights";
 
 const Layout = () => {
@@ -21,6 +22,8 @@ const Layout = () => {
         return <TransactionsPage />;
           case "addTransactions":
             return <AddTransactionForm />;
+            case "insights":
+              return <InsightsPage/>
             case "logout":
                 removeRole()
                 return

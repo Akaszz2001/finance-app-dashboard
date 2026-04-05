@@ -1,29 +1,37 @@
+
+
 import { create } from "zustand";
 
-export const useFinanceStore = create((set) => ({
+const calculateSummary = (transactions) => {
+  const income = transactions
+    .filter((t) => t.type === "income")
+    .reduce((acc, t) => acc + t.amount, 0);
+
+  const expense = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((acc, t) => acc + t.amount, 0);
+
+  return {
+    income,
+    expense,
+    balance: income - expense,
+  };
+};
+
+export const useFinanceStore = create((set, get) => ({
+  transactions: JSON.parse(localStorage.getItem("transactions")) || [],
+
+  income: 0,
+  expense: 0,
+  balance: 0,
+
   role: "",
 
-  transactions: [
-    {
-      id: 1,
-      date: "2026-04-01",
-      amount: 500,
-      category: "Food",
-      type: "expense",
-    },
-    {
-      id: 2,
-      date: "2026-04-02",
-      amount: 2000,
-      category: "Salary",
-      type: "income",
-    },
-  ],
-
-  setRole: (role) => {
+    setRole: (role) => {
     
     localStorage.setItem("role",role)
     set({ role })},
+
 
     getRole:()=>{
         try {
@@ -33,16 +41,68 @@ export const useFinanceStore = create((set) => ({
             alert("Error fetching role "+ error)
         }
     },
+
 removeRole:()=>{
     localStorage.setItem("role","")
     set({role:""})
 },
-  addTransaction: (tx) =>
+  // ✅ ADD
+  addTransaction: (tx) =>{
+    try {
+       set((state) => {
+      const updated = [...state.transactions, tx];
+      localStorage.setItem("transactions", JSON.stringify(updated));
+
+      return {
+        transactions: updated,
+        ...calculateSummary(updated), 
+      };
+    })
+    return true
+    } catch (error) {
+      alert("Adding transaction failed "+error)
+      return false
+    }
+  }
+   ,
+
+  // ✅ DELETE
+  deleteTransaction: (id) =>
     set((state) => {
-        const updated=[...state.transactions, tx]
-        localStorage.setItem("transactions",JSON.stringify(updated))
-        return {transactions:updated}
-}),
+      const updated = state.transactions.filter((t) => t.id !== id);
+      localStorage.setItem("transactions", JSON.stringify(updated));
+
+      return {
+        transactions: updated,
+        ...calculateSummary(updated),
+      };
+    }),
+
+  // ✅ UPDATE
+  updateTransaction: (updatedTx) =>{
+try {
+   set((state) => {
+      const updated = state.transactions.map((t) =>
+        t.id === updatedTx.id ? updatedTx : t
+      );
+
+      localStorage.setItem("transactions", JSON.stringify(updated));
+
+      return {
+        transactions: updated,
+        ...calculateSummary(updated),
+      };
+    })
+
+    return true
+} catch (error) {
+  alert("Updating transaction failed " +error)
+  return false
+}
+
+  }
+   ,
+    
 
 getTransactions: () => {
   set((state)=>{
@@ -55,27 +115,11 @@ getTransactions: () => {
 
     // Save back to localStorage
     localStorage.setItem("transactions", JSON.stringify(unique));
-  return {transactions:unique}
+  return {transactions:unique,...calculateSummary(unique)}
   })
    
 
 },
 
-  deleteTransaction: (id) =>
-    set((state) => {
-  const updated = state.transactions.filter((t) => t.id !== id);
-      localStorage.setItem("transactions", JSON.stringify(updated));
-      return { transactions: updated };
-}),
 
-updateTransaction: (updatedTx) =>
-  set((state) => {
-    const updated = state.transactions.map((t) =>
-      t.id === updatedTx.id ? updatedTx : t
-    );
-
-    localStorage.setItem("transactions", JSON.stringify(updated));
-
-    return { transactions: updated }; // ✅ VERY IMPORTANT
-  }),
-}))
+}));

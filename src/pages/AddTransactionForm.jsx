@@ -1,21 +1,18 @@
-import {  useState } from "react";
+import { useState } from "react";
 import { useFinanceStore } from "../store/useFinanceStore";
 
-
-const AddTransactionForm = ({ onClose,initialData  }) => {
-  const { addTransaction ,updateTransaction} =useFinanceStore()
+const AddTransactionForm = ({ onClose, initialData }) => {
+  const { addTransaction, updateTransaction, balance } = useFinanceStore();
   console.log();
-  
+  const iD = initialData;
   const [form, setForm] = useState(
     initialData || {
       date: "",
       amount: "",
       category: "",
       type: "",
-    }
+    },
   );
-
-
 
   // 📅 Get today's date (to restrict future)
   const today = new Date().toISOString().split("T")[0];
@@ -24,34 +21,85 @@ const AddTransactionForm = ({ onClose,initialData  }) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
- const handleSubmit = (e) => {
-  e.preventDefault();
 
-  if (initialData) {
-    // ✏️ EDIT
-    updateTransaction({
-      ...form,
-      id: initialData.id,   // ✅ KEEP ORIGINAL ID
-      amount: Number(form.amount),
-    });
-  } else {
-    // ➕ ADD
-    addTransaction({
-      ...form,
-      id: Date.now(),
-      amount: Number(form.amount),
-    });
-  }
 
-  onClose();
-};
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (form.amount == 0) {
+      alert("Amount can't be zero");
+      return;
+    }
+
+    if (initialData) {
+      console.log(iD.amount);
+      console.log(form.amount);
+
+      if (
+        iD.amount < form.amount &&
+        balance == 0 &&
+        form.category != "Salary"
+      ) {
+        alert(
+          "Amount of this expense can't be" +
+            form.amount +
+            ", wallet is already zero!!",
+        );
+        return;
+      }
+      if (balance != 0 && form.amount > balance + iD.amount) {
+        alert("Amount can't be exceed more than your balance");
+        return;
+      }
+      const res = await updateTransaction({
+        ...form,
+        id: initialData.id, // ✅ KEEP ORIGINAL ID
+        amount: Number(form.amount),
+      });
+      if (res) {
+        alert("Successfully updated transaction");
+        setForm({
+          date: "",
+          amount: "",
+          category: "",
+          type: "",
+        });
+      }
+    } else {
+      if (form.amount > balance && form.category != "Salary") {
+        alert("You have only" + balance + "left in your wallet");
+
+        return;
+      }
+
+      // ➕ ADD
+      const res = await addTransaction({
+        ...form,
+        id: Date.now(),
+        amount: Number(form.amount),
+      });
+
+      if (res) {
+        alert("Successfully added transaction");
+        setForm({
+          date: "",
+          amount: "",
+          category: "",
+          type: "",
+        });
+      }
+    }
+
+    onClose();
+  };
 
   return (
     <div className="bg-white p-6 rounded-xl shadow w-full max-w-md">
-      <h2 className="text-xl font-bold mb-4">Add Transaction</h2>
+      <h2 className="text-xl font-bold mb-4">
+        {initialData ? "Update Transaction" : "Add Transaction"}
+      </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-
         {/* Date */}
         <div>
           <label className="block mb-1">Date</label>
@@ -132,10 +180,9 @@ const AddTransactionForm = ({ onClose,initialData  }) => {
             type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded"
           >
-          {initialData ?"Update":"Add"}
+            {initialData ? "Update" : "Add"}
           </button>
         </div>
-
       </form>
     </div>
   );

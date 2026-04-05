@@ -24,7 +24,7 @@ const Sidebar = ({
       {/* Overlay (mobile) */}
     {sidebarOpen && (
   <div
-    className="fixed inset-0 backdrop-blur-sm bg-black/20 md:hidden"
+    className="fixed inset-0 backdrop-blur-sm bg-black/20 z-40 md:hidden"
     onClick={() => setSidebarOpen(false)}
   />
 )}
@@ -34,6 +34,7 @@ const Sidebar = ({
         className={`
           fixed md:static top-0 left-0 h-full bg-white shadow-lg
           w-64 p-4 transform transition-transform duration-300
+           z-50
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0
         `}
