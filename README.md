@@ -50,6 +50,7 @@ This project allows users to track financial activities, explore transactions, a
 📂 Bulk Upload (JSON)
 
 - Upload multiple transactions via JSON file
+- Sample json transaction data can be downloaded from the bulk uploading window
 - Preview transactions before uploading
 - Sequential validation logic:
   - Prevents negative balance
