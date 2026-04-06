@@ -8,7 +8,7 @@ This project allows users to track financial activities, explore transactions, a
 
 🚀 Live Demo
 
-👉 https://finance-app-dashboard-dtruio9bf-akaszz2001s-projects.vercel.app/
+👉 https://finance-app-dashboard-livid.vercel.app/
 
 ---
 
