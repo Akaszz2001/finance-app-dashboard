@@ -180,12 +180,36 @@ const handleBulkSubmit = () => {
   //download sample of dataset
   const downloadSample = () => {
     const sample = [
-      {
-        date: "2026-04-01",
-        amount: 500,
-        category: "Food",
-        type: "expense",
-      },
+  {
+    "date": "2026-04-01",
+    "amount": 500,
+    "category": "Food",
+    "type": "expense"
+  },
+  {
+    "date": "2026-04-02",
+    "amount": 1200,
+    "category": "Groceries",
+    "type": "expense"
+  },
+  {
+    "date": "2026-04-03",
+    "amount": 300,
+    "category": "Transport",
+    "type": "expense"
+  },
+  {
+    "date": "2026-04-04",
+    "amount": 2500,
+    "category": "Salary",
+    "type": "income"
+  },
+  {
+    "date": "2026-04-05",
+    "amount": 800,
+    "category": "Shopping",
+    "type": "expense"
+  },
     ];
 
     const blob = new Blob([JSON.stringify(sample, null, 2)], {
