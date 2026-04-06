@@ -1,0 +1,50 @@
+[
+  {
+    "date": "2026-04-01",
+    "amount": 500,
+    "category": "Food",
+    "type": "expense"
+  },
+  {
+    "date": "2026-04-02",
+    "amount": 1200,
+    "category": "Groceries",
+    "type": "expense"
+  },
+  {
+    "date": "2026-04-03",
+    "amount": 300,
+    "category": "Transport",
+    "type": "expense"
+  },
+  {
+    "date": "2026-04-04",
+    "amount": 2500,
+    "category": "Salary",
+    "type": "income"
+  },
+  {
+    "date": "2026-04-05",
+    "amount": 800,
+    "category": "Shopping",
+    "type": "expense"
+  },
+  {
+    "date": "2026-04-06",
+    "amount": 450,
+    "category": "Bills",
+    "type": "expense"
+  },
+  {
+    "date": "2026-04-07",
+    "amount": 600,
+    "category": "Entertainment",
+    "type": "expense"
+  },
+  {
+    "date": "2026-04-08",
+    "amount": 1500,
+    "category": "Salary",
+    "type": "income"
+  }
+]

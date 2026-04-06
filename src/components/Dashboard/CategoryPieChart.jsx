@@ -49,7 +49,7 @@ const CategoryPieChart = () => {
 
       <div className="flex flex-col md:flex-row items-center gap-6">
 
-        {/* Pie Chart */}
+   
         <div className="w-full md:w-2/3 h-[250px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -72,7 +72,7 @@ const CategoryPieChart = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* 🔥 Custom Legend */}
+      
         <div className="w-full md:w-1/3">
           {data.map((item, index) => (
             <div

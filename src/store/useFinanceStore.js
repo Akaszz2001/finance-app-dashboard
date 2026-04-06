@@ -18,7 +18,7 @@ const calculateSummary = (transactions) => {
   };
 };
 
-export const useFinanceStore = create((set, get) => ({
+export const useFinanceStore = create((set) => ({
   transactions: JSON.parse(localStorage.getItem("transactions")) || [],
 
   income: 0,
@@ -26,6 +26,8 @@ export const useFinanceStore = create((set, get) => ({
   balance: 0,
 
   role: "",
+
+
 
     setRole: (role) => {
     
@@ -46,7 +48,7 @@ removeRole:()=>{
     localStorage.setItem("role","")
     set({role:""})
 },
-  // ✅ ADD
+
   addTransaction: (tx) =>{
     try {
        set((state) => {
@@ -66,7 +68,7 @@ removeRole:()=>{
   }
    ,
 
-  // ✅ DELETE
+
   deleteTransaction: (id) =>
     set((state) => {
       const updated = state.transactions.filter((t) => t.id !== id);
@@ -78,7 +80,7 @@ removeRole:()=>{
       };
     }),
 
-  // ✅ UPDATE
+ 
   updateTransaction: (updatedTx) =>{
 try {
    set((state) => {
@@ -121,5 +123,15 @@ getTransactions: () => {
 
 },
 
+addBulkTransactions: (txs) =>
+  set((state) => {
+    const updated = [...state.transactions, ...txs];
 
+    localStorage.setItem("transactions", JSON.stringify(updated));
+
+    return {
+      transactions: updated,
+      ...calculateSummary(updated),
+    };
+  }),
 }));

@@ -7,7 +7,7 @@ import TransactionsPage from "../../pages/TransactionsPage";
 import AddTransactionForm from "../../pages/AddTransactionForm";
 import { useFinanceStore } from "../../store/useFinanceStore";
 import InsightsPage from "../Insights/InsightsPage";
-// import Insights from "../Insights/Insights";
+
 
 const Layout = () => {
   const [activePage, setActivePage] = useState("dashboard");
@@ -35,13 +35,12 @@ const Layout = () => {
   return (
     <div className="h-screen flex flex-col">
       
-      {/* Topbar */}
+
       <Topbar setSidebarOpen={setSidebarOpen} />
 
-      {/* Body */}
+
       <div className="flex flex-1">
-        
-        {/* Sidebar */}
+ 
         <Sidebar
           activePage={activePage}
           setActivePage={setActivePage}
@@ -49,7 +48,6 @@ const Layout = () => {
           setSidebarOpen={setSidebarOpen}
         />
 
-        {/* Main Content */}
         <div className="flex-1 p-4 bg-gray-100 overflow-auto">
           {renderPage()}
         </div>

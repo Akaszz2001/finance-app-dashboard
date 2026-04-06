@@ -1,10 +1,20 @@
+// Same form used for adding and updating single transaction
+
+
 import { useState } from "react";
 import { useFinanceStore } from "../store/useFinanceStore";
 
 const AddTransactionForm = ({ onClose, initialData }) => {
-  const { addTransaction, updateTransaction, balance } = useFinanceStore();
-  console.log();
+  const { addTransaction, updateTransaction, addBulkTransactions, balance } =
+    useFinanceStore();
+
+  const [previewData, setPreviewData] = useState([]);
+  const [fileError, setFileError] = useState("");
+
+  const [mode, setMode] = useState("single");
+
   const iD = initialData;
+
   const [form, setForm] = useState(
     initialData || {
       date: "",
@@ -14,65 +24,51 @@ const AddTransactionForm = ({ onClose, initialData }) => {
     },
   );
 
-  // 📅 Get today's date (to restrict future)
   const today = new Date().toISOString().split("T")[0];
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-
-
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (form.amount == 0) {
       alert("Amount can't be zero");
       return;
     }
-
+    // Update transaction
     if (initialData) {
-      console.log(iD.amount);
-      console.log(form.amount);
-
       if (
         iD.amount < form.amount &&
         balance == 0 &&
         form.category != "Salary"
       ) {
-        alert(
-          "Amount of this expense can't be" +
-            form.amount +
-            ", wallet is already zero!!",
-        );
+        alert("Wallet is empty");
         return;
       }
-      if (balance != 0 && form.amount > balance + iD.amount) {
-        alert("Amount can't be exceed more than your balance");
+
+      if (balance != 0 && form.amount > balance + iD.amount && form.category !="Salary") {
+        alert("Amount exceeds balance");
         return;
       }
+
       const res = await updateTransaction({
         ...form,
-        id: initialData.id, // ✅ KEEP ORIGINAL ID
+        id: initialData.id,
         amount: Number(form.amount),
       });
+
       if (res) {
-        alert("Successfully updated transaction");
-        setForm({
-          date: "",
-          amount: "",
-          category: "",
-          type: "",
-        });
+        alert("Updated successfully");
       }
     } else {
+      //This is for single upload of a transaction
       if (form.amount > balance && form.category != "Salary") {
-        alert("You have only" + balance + "left in your wallet");
-
+        alert("Insufficient balance");
         return;
       }
 
-      // ➕ ADD
       const res = await addTransaction({
         ...form,
         id: Date.now(),
@@ -80,7 +76,7 @@ const AddTransactionForm = ({ onClose, initialData }) => {
       });
 
       if (res) {
-        alert("Successfully added transaction");
+        alert("Added successfully");
         setForm({
           date: "",
           amount: "",
@@ -93,44 +89,172 @@ const AddTransactionForm = ({ onClose, initialData }) => {
     onClose();
   };
 
+  //Upload bulk amount transactions using json file 
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target.result);
+
+        if (!Array.isArray(data)) {
+          setFileError("Invalid JSON format");
+          return;
+        }
+
+        setPreviewData(data); 
+        setFileError("");
+      } catch {
+        setFileError("Invalid JSON file");
+      }
+    };
+
+    reader.readAsText(file);
+  };
+
+const handleBulkSubmit = () => {
+  if (!previewData.length) {
+    alert("No data to upload");
+    return;
+  }
+
+  const today = new Date().toISOString().split("T")[0];
+
+  let currentBalance = balance;
+  const validTransactions = [];
+  let skipped = 0;
+
+  previewData.forEach((item) => {
+    const amount = Number(item.amount);
+
+
+    if (!item.date || item.date >=today) {
+      skipped++;
+      return;
+    }
+
+  
+    if (item.type === "income" || item.category === "Salary") {
+      currentBalance += amount;
+
+      validTransactions.push({
+        ...item,
+        id: Date.now() + Math.random(),
+        amount,
+      });
+
+      return;
+    }
+
+
+    if (amount <= currentBalance) {
+      currentBalance -= amount;
+
+      validTransactions.push({
+        ...item,
+        id: Date.now() + Math.random(),
+        amount,
+      });
+    } else {
+      skipped++;
+    }
+  });
+
+  if (!validTransactions.length) {
+    alert("No valid transactions to add");
+    return;
+  }
+
+  addBulkTransactions(validTransactions);
+
+  alert(
+    `${validTransactions.length} added, ${skipped} skipped (invalid date or insufficient balance)`
+  );
+
+  setPreviewData([]);
+  onClose();
+};
+  //download sample of dataset
+  const downloadSample = () => {
+    const sample = [
+      {
+        date: "2026-04-01",
+        amount: 500,
+        category: "Food",
+        type: "expense",
+      },
+    ];
+
+    const blob = new Blob([JSON.stringify(sample, null, 2)], {
+      type: "application/json",
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "sample.json";
+    a.click();
+  };
+
   return (
     <div className="bg-white p-6 rounded-xl shadow w-full max-w-md">
       <h2 className="text-xl font-bold mb-4">
         {initialData ? "Update Transaction" : "Add Transaction"}
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Date */}
-        <div>
-          <label className="block mb-1">Date</label>
+     
+      {!initialData && (
+        <div className="flex gap-2 mb-4">
+          <button
+            onClick={() => setMode("single")}
+            className={`px-3 py-1 rounded ${
+              mode === "single" ? "bg-blue-500 text-white" : "bg-gray-200"
+            }`}
+          >
+            Single
+          </button>
+
+          <button
+            onClick={() => setMode("bulk")}
+            className={`px-3 py-1 rounded ${
+              mode === "bulk" ? "bg-blue-500 text-white" : "bg-gray-200"
+            }`}
+          >
+            Bulk Upload
+          </button>
+        </div>
+      )}
+
+  
+      {(mode === "single" || initialData) && (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Date */}
           <input
             type="date"
             name="date"
-            max={today} // 🚫 future dates blocked
+            max={today}
             value={form.date}
             onChange={handleChange}
             required
             className="w-full border p-2 rounded"
           />
-        </div>
 
-        {/* Amount */}
-        <div>
-          <label className="block mb-1">Amount</label>
+          {/* Amount */}
           <input
             type="number"
             name="amount"
-            placeholder="Enter amount"
+            placeholder="Amount"
             value={form.amount}
             onChange={handleChange}
             required
             className="w-full border p-2 rounded"
           />
-        </div>
 
-        {/* Category */}
-        <div>
-          <label className="block mb-1">Category</label>
+          {/* Category */}
           <select
             name="category"
             value={form.category}
@@ -138,7 +262,7 @@ const AddTransactionForm = ({ onClose, initialData }) => {
             required
             className="w-full border p-2 rounded"
           >
-            <option value="">Select Category</option>
+            <option value="">Category</option>
             <option value="Food">Food</option>
             <option value="Groceries">Groceries</option>
             <option value="Transport">Transport</option>
@@ -148,11 +272,8 @@ const AddTransactionForm = ({ onClose, initialData }) => {
             <option value="Salary">Salary</option>
             <option value="Other">Other</option>
           </select>
-        </div>
 
-        {/* Type */}
-        <div>
-          <label className="block mb-1">Type</label>
+          {/* Type */}
           <select
             name="type"
             value={form.type}
@@ -160,30 +281,87 @@ const AddTransactionForm = ({ onClose, initialData }) => {
             required
             className="w-full border p-2 rounded"
           >
-            <option value="">Select Type</option>
+            <option value="">Type</option>
             <option value="income">Income</option>
             <option value="expense">Expense</option>
           </select>
-        </div>
 
-        {/* Buttons */}
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-300 rounded"
-          >
-            Cancel
-          </button>
+          {/* Buttons */}
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-300 rounded"
+            >
+              Cancel
+            </button>
 
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            {initialData ? "Update" : "Add"}
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              {initialData ? "Update" : "Add"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      
+      {!initialData && mode === "bulk" && (
+        <div className="space-y-4">
+       
+          <input
+            type="file"
+            accept=".json"
+            onChange={handleFileUpload}
+            className="w-full border p-2 rounded"
+          />
+
+          {fileError && <p className="text-red-500 text-sm">{fileError}</p>}
+
+       
+          {previewData.length > 0 && (
+            <div className="max-h-40 overflow-auto border rounded">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {previewData.map((t, i) => (
+                    <tr key={i} className="text-center border-t">
+                      <td>{t.date}</td>
+                      <td>₹{t.amount}</td>
+                      <td>{t.category}</td>
+                      <td>{t.type}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+  
+          {previewData.length > 0 && (
+            <button
+              onClick={handleBulkSubmit}
+              className="w-full bg-green-500 text-white py-2 rounded"
+            >
+              Upload Transactions
+            </button>
+          )}
+
+          {/* Sample */}
+          <button onClick={downloadSample} className="text-blue-500 text-sm">
+            Download Sample JSON
           </button>
         </div>
-      </form>
+      )}
     </div>
   );
 };

@@ -4,6 +4,7 @@ import CategoryPieChart from "../components/Dashboard/CategoryPieChart";
 import { useEffect } from "react";
 import { useFinanceStore } from "../store/useFinanceStore";
 import SummaryCards from "../components/Dashboard/SummaryCards";
+import RecentTransactions from "../components/Dashboard/RecentTransactions";
 
 const DashboardPage = () => {
 const {getTransactions}=useFinanceStore()
@@ -14,7 +15,8 @@ useEffect(()=>{
 },[getTransactions])
   return (
     <div className="grid md:grid-cols-2 gap-6">
-      <h1 className="text-2xl font-bold mb-4 ">Dashboard</h1>
+    
+      <RecentTransactions/>
       <SummaryCards />
       <Charts />
       <CategoryPieChart />

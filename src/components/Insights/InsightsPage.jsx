@@ -13,7 +13,7 @@ const InsightsPage = () => {
     );
   }
 
-  // 🔥 Highest Category
+ 
   const categoryMap = {};
   transactions.forEach((t) => {
     if (t.type === "expense") {
@@ -32,7 +32,7 @@ const InsightsPage = () => {
     }
   });
 
-  // 🔥 Monthly comparison
+
   const currentMonth = new Date().getMonth();
   const lastMonth = currentMonth - 1;
 
@@ -50,7 +50,7 @@ const InsightsPage = () => {
 
   const isIncreased = currentExpense > lastExpense;
 
-  // 🔥 Income vs Expense
+
   const income = transactions
     .filter((t) => t.type === "income")
     .reduce((a, t) => a + t.amount, 0);
@@ -58,14 +58,47 @@ const InsightsPage = () => {
   const expense = transactions
     .filter((t) => t.type === "expense")
     .reduce((a, t) => a + t.amount, 0);
+const suggestions = [];
 
+
+if (expense > income) {
+  suggestions.push("⚠️ Your expenses exceed your income");
+} else if (income > expense) {
+  suggestions.push("✅ Good job! You are saving money");
+}
+
+
+if (highestCategory !== "N/A") {
+  suggestions.push(
+    `⚠️ You are spending most on ${highestCategory}. Try reducing it.`
+  );
+}
+
+
+if (currentExpense > lastExpense) {
+  suggestions.push("📈 Your spending increased this month");
+} else if (currentExpense < lastExpense) {
+  suggestions.push("📉 Your spending decreased this month");
+}
+
+
+if (!suggestions.length) {
+  suggestions.push("No insights available");
+}
+
+
+const top3 = Object.entries(categoryMap)
+  .map(([name, value]) => ({ name, value }))
+  .sort((a, b) => b.value - a.value)
+  .slice(0, 3);
+
+
+const totalExpense = top3.reduce((acc, t) => acc + t.value, 0);
   return (
     <div className="space-y-6">
 
-      {/* Top Cards */}
       <div className="grid md:grid-cols-3 gap-6">
 
-        {/* Highest Category */}
         <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
           <h2 className="text-gray-500 text-sm">
             Highest Spending Category
@@ -78,7 +111,7 @@ const InsightsPage = () => {
           </p>
         </div>
 
-        {/* Monthly Comparison */}
+     
         <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
           <h2 className="text-gray-500 text-sm">
             Monthly Spending
@@ -105,7 +138,7 @@ const InsightsPage = () => {
           </p>
         </div>
 
-        {/* Income vs Expense */}
+    
         <div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
           <h2 className="text-gray-500 text-sm">
             Income vs Expense
@@ -125,19 +158,78 @@ const InsightsPage = () => {
 
       </div>
 
-      {/* Smart Insight Message */}
-      <div className="bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-6 rounded-2xl shadow">
-        <h2 className="text-lg font-semibold">
-          Insights
-        </h2>
+<div className="bg-white p-6 rounded-2xl shadow mt-6">
+  <h2 className="text-lg font-semibold mb-4">
+    Smart Suggestions
+  </h2>
 
-        <p className="mt-2 text-lg">
-          {isIncreased
-            ? "⚠️ Your spending increased this month"
-            : "✅ Your spending decreased this month"}
-        </p>
+  <div className="space-y-3">
+    {suggestions.map((msg, index) => {
+      const isWarning = msg.includes("⚠️");
+      const isGood = msg.includes("✅");
+
+      return (
+        <div
+          key={index}
+          className={`p-3 rounded-lg text-sm flex gap-2 ${
+            isWarning
+              ? "bg-red-50 text-red-600"
+              : isGood
+              ? "bg-green-50 text-green-600"
+              : "bg-blue-50 text-blue-600"
+          }`}
+        >
+          <span>💡</span>
+          <p>{msg}</p>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
+
+<div className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+  <h2 className="text-gray-500 text-sm mb-4">
+    Top Spending Categories
+  </h2>
+
+  <div className="space-y-3">
+    {top3.map((item, index) => (
+      <div
+        key={item.name}
+        className="flex justify-between items-center bg-gray-50 p-3 rounded-lg"
+      >
+       
+        <div className="flex items-center gap-3">
+          <span
+            className={`w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold text-white ${
+              index === 0
+                ? "bg-yellow-500"
+                : index === 1
+                ? "bg-gray-400"
+                : "bg-orange-400"
+            }`}
+          >
+            {index + 1}
+          </span>
+
+          <span className="font-medium">{item.name}</span>
+        </div>
+
+      
+        <div className="flex flex-col items-end">
+          <span className="font-semibold text-red-500">
+            ₹{item.value}
+          </span>
+
+          <span className="text-xs text-gray-500">
+            ({((item.value / totalExpense) * 100).toFixed(1)}%)
+          </span>
+        </div>
       </div>
-
+    ))}
+  </div>
+</div>
     </div>
   );
 };

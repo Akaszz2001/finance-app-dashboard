@@ -1,4 +1,11 @@
-import { LayoutDashboard, List, BarChart, X, PlusCircle, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  List,
+  BarChart,
+  X,
+  PlusCircle,
+  LogOut,
+} from "lucide-react";
 import { useFinanceStore } from "../../store/useFinanceStore";
 
 const Sidebar = ({
@@ -7,29 +14,34 @@ const Sidebar = ({
   sidebarOpen,
   setSidebarOpen,
 }) => {
-    const { role}=useFinanceStore()
+  const { role } = useFinanceStore();
   const menu = [
     { id: "dashboard", icon: <LayoutDashboard />, label: "Dashboard" },
     { id: "transactions", icon: <List />, label: "Transactions" },
     { id: "insights", icon: <BarChart />, label: "Insights" },
-...(role==='admin'?
-    [
-        {id:'addTransactions',icon:<PlusCircle/>,label:"Add Transactions"}
-    ]:[]
-),
-  { id: "logout", icon: <LogOut />, label: "Logout" }, ];
+    ...(role === "admin"
+      ? [
+          {
+            id: "addTransactions",
+            icon: <PlusCircle />,
+            label: "Add Transactions",
+          },
+        ]
+      : []),
+    { id: "logout", icon: <LogOut />, label: "Logout" },
+  ];
 
   return (
     <>
-      {/* Overlay (mobile) */}
-    {sidebarOpen && (
-  <div
-    className="fixed inset-0 backdrop-blur-sm bg-black/20 z-40 md:hidden"
-    onClick={() => setSidebarOpen(false)}
-  />
-)}
+      
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 backdrop-blur-sm bg-black/20 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-      {/* Sidebar */}
+   
       <div
         className={`
           fixed md:static top-0 left-0 h-full bg-white shadow-lg
@@ -39,7 +51,7 @@ const Sidebar = ({
           md:translate-x-0
         `}
       >
-        {/* Close button (mobile) */}
+
         <div className="flex justify-between items-center mb-6 md:hidden">
           <h2 className="font-bold">Menu</h2>
           <button onClick={() => setSidebarOpen(false)}>
@@ -47,7 +59,6 @@ const Sidebar = ({
           </button>
         </div>
 
-        {/* Menu Items */}
         {menu.map((item) => (
           <button
             key={item.id}

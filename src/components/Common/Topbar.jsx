@@ -1,12 +1,15 @@
-import { Menu, User } from "lucide-react";
+import { Menu, Moon, Sun, User } from "lucide-react";
 
 const Topbar = ({ setSidebarOpen }) => {
+
+
+  
   return (
-    <div className="flex items-center justify-between bg-white px-4 py-3 shadow">
+    <div className="flex items-center justify-between bg-white  px-4 py-3 shadow">
       
-      {/* Left */}
+  
       <div className="flex items-center gap-3">
-        {/* Toggle button (mobile only) */}
+     
         <button
           onClick={() => setSidebarOpen(true)}
           className="md:hidden"
@@ -19,7 +22,7 @@ const Topbar = ({ setSidebarOpen }) => {
         </h1>
       </div>
 
-      {/* Right */}
+     
       <div className="flex items-center gap-2">
         <User />
       </div>
