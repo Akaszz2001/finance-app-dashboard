@@ -1,18 +1,167 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+💰 Finance Dashboard UI
 
-Currently, two official plugins are available:
+A clean and interactive Finance Dashboard Web Application built using modern frontend technologies.
+This project allows users to track financial activities, explore transactions, and understand spending patterns.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+🚀 Live Demo
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+👉 https://finance-app-dashboard-dtruio9bf-akaszz2001s-projects.vercel.app/
 
-Note: This will impact Vite dev & build performances.
+---
 
-## Expanding the ESLint configuration
+📌 Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+🏠 Dashboard Overview
+
+- Displays Total Balance, Income, and Expenses
+- Time-based visualization (trend chart)
+- Category-wise breakdown (pie chart)
+- Recent transactions section
+
+---
+
+💳 Transactions Management
+
+- View transactions in a structured table
+- Add new transactions
+- Edit and delete transactions (Admin only)
+- Filters available:
+  - Date (week/month)
+  - Category
+  - Type (income/expense)
+  - Amount sorting (ascending/descending)
+- Load more functionality (Viewer mode)
+
+---
+
+👥 Role-Based UI
+
+- Viewer
+  - Can only view transactions and insights
+- Admin
+  - Can add, edit, and delete transactions
+  - Can upload transactions in bulk
+
+---
+
+📂 Bulk Upload (JSON)
+
+- Upload multiple transactions via JSON file
+- Preview transactions before uploading
+- Sequential validation logic:
+  - Prevents negative balance
+  - Skips transactions exceeding balance
+  - Rejects future dates
+- Displays count of added and skipped transactions
+
+---
+
+📊 Insights Section
+
+- Highest spending category
+- Monthly comparison
+- Percentage change in spending
+- Top 3 spending categories
+- Basic smart suggestions based on data
+
+---
+
+💾 Data Persistence
+
+- Uses localStorage to store transactions
+
+
+---
+
+
+🛠️ Tech Stack
+
+- Frontend: React (Vite)
+- State Management: Zustand
+- Styling: Tailwind CSS
+- Charts: Recharts
+- Icons: Lucide React
+
+---
+
+📁 Project Structure
+
+src/
+│
+├── components/
+├── pages/
+├── store/
+│   └── useFinanceStore.js
+├── App.jsx
+
+---
+
+⚙️ Setup Instructions
+
+1️⃣ Clone the Repository
+
+git clone https://github.com/Akaszz2001/finance-app-dashboard.git
+cd finance-app-dashboard
+
+---
+
+2️⃣ Install Dependencies
+
+npm install
+
+---
+
+3️⃣ Run Development Server
+
+npm run dev
+
+---
+
+4️⃣ Build for Production
+
+npm run build
+
+---
+
+🧠 Key Concepts Implemented
+
+- Component-based architecture
+- State management using Zustand
+- Role-based UI rendering
+- Data visualization with charts
+- JSON file handling and parsing
+- Sequential validation in bulk upload
+- Responsive UI design
+
+---
+
+⚠️ Edge Case Handling
+
+- Prevents future date transactions
+- Prevents negative balance
+- Skips invalid bulk upload entries
+- Handles empty state UI
+
+---
+
+
+📬 Contact
+
+👤 Akash Krishna M
+7306935086
+
+---
+
+⭐ Conclusion
+
+This project demonstrates strong understanding of:
+
+- Frontend architecture
+- State management
+- UI/UX design
+- Data handling and validation
+
+---
